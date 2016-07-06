@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT' 
   s.author       = { "LiuChaolong" => "1097920530@qq.com" }
   # s.social_media_url = "http://twitter.com/yulingtianxia"
-  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"b186baae5e7830d9c26c66109a3765a4d6ae1eae"}
+  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"4531944d052dc189c1d6768e4797c45644d4df68"}
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
@@ -23,12 +23,13 @@ s.subspec 'CLNetWorking' do |ss|
 ss.source_files = 'CLAFNetworking/**/*'
 ss.public_header_files = 'CLAFNetworking/**/*.h'
 ss.dependency 'AFNetworking'
+ss.library = 'resolv'
 end
 
 s.subspec 'CLQueueManager' do |ss|
 ss.source_files = 'DownloadManager/**/*'
 ss.public_header_files = 'DownloadManager/**/*.h'
-ss.dependency 'CLCameraKit/CLNetWorking'
+#ss.dependency 'CLCameraKit/CLNetWorking'
 end
 
 s.subspec 'Head' do |ss|
@@ -40,7 +41,7 @@ s.subspec 'Camera' do |ss|
 ss.source_files = 'Camera/**/*'
 ss.public_header_files = 'Camera/**/*.h'
 ss.dependency 'AFNetworking'
-ss.dependency 'CLCameraKit/Const','CLCameraKit/CLQueueManager','CLCameraKit/Model'
+#ss.dependency 'CLCameraKit/Const','CLCameraKit/CLQueueManager','CLCameraKit/Model'
 end
 
 s.subspec 'Const' do |ss|
@@ -56,13 +57,13 @@ end
 s.subspec 'Novatek' do |ss|
 ss.source_files = 'Novatek/**/*'
 ss.public_header_files = 'Novatek/**/*.h'
-ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
+#ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
 end
 
 s.subspec 'AIT' do |ss|
 ss.source_files = 'AIT/**/*'
 ss.public_header_files = 'AIT/**/*.h'
-ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
+#ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
 end
 
 s.subspec 'Other' do |ss|
