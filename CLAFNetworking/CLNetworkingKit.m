@@ -7,7 +7,7 @@
 //
 
 #import "CLNetworkingKit.h"
-#import <AFNetworking.h>
+#import "AFNetworking.h"
 
 @implementation CLNetworkingKit
 

@@ -7,7 +7,7 @@
 //
 
 #import "CameraManager.h"
-#import <AFNetworking.h>
+#import "AFNetworking.h"
 
 #define NOVATE_PLAY_URL @"rtsp://192.168.1.254/xxxx.mp4"
 #define AIT_PLAY_URL @"rtsp://192.72.1.1/liveRTSP/av1"

@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT' 
   s.author       = { "LiuChaolong" => "1097920530@qq.com" }
   # s.social_media_url = "http://twitter.com/yulingtianxia"
-  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"4531944d052dc189c1d6768e4797c45644d4df68"}
+  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"9392b90b6d4161a8b53c83ae550747e3d073df2c"}
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
@@ -29,7 +29,7 @@ end
 s.subspec 'CLQueueManager' do |ss|
 ss.source_files = 'DownloadManager/**/*'
 ss.public_header_files = 'DownloadManager/**/*.h'
-#ss.dependency 'CLCameraKit/CLNetWorking'
+ss.dependency 'CLCameraKit/CLNetWorking'
 end
 
 s.subspec 'Head' do |ss|
@@ -38,37 +38,39 @@ ss.public_header_files = 'Head/**/*.h'
 end
 
 s.subspec 'Camera' do |ss|
-ss.source_files = 'Camera/**/*'
-ss.public_header_files = 'Camera/**/*.h'
+ss.source_files = 'CameraKit/Camera/**/*'
+ss.public_header_files = 'CameraKit/Camera/**/*.h'
 ss.dependency 'AFNetworking'
 #ss.dependency 'CLCameraKit/Const','CLCameraKit/CLQueueManager','CLCameraKit/Model'
 end
 
 s.subspec 'Const' do |ss|
-ss.source_files = 'Const/**/*'
-ss.public_header_files = 'Const/**/*.h'
+ss.source_files = 'CameraKit/Const/**/*'
+ss.public_header_files = 'CameraKit/Const/**/*.h'
 end
 
 s.subspec 'Model' do |ss|
-ss.source_files = 'Model/**/*'
-ss.public_header_files = 'Model/**/*.h'
+ss.source_files = 'CameraKit/Model/**/*'
+ss.public_header_files = 'CameraKit/Model/**/*.h'
 end
 
 s.subspec 'Novatek' do |ss|
-ss.source_files = 'Novatek/**/*'
-ss.public_header_files = 'Novatek/**/*.h'
+ss.source_files = 'CameraKit/Novatek/**/*'
+ss.public_header_files = 'CameraKit/Novatek/**/*.h'
 #ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
+ss.dependency 'CocoaAsyncSocket'
 end
 
 s.subspec 'AIT' do |ss|
-ss.source_files = 'AIT/**/*'
-ss.public_header_files = 'AIT/**/*.h'
+ss.source_files = 'CameraKit/AIT/**/*'
+ss.public_header_files = 'CameraKit/AIT/**/*.h'
 #ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
+ss.dependency 'CocoaAsyncSocket'
 end
 
 s.subspec 'Other' do |ss|
-ss.source_files = 'Other/**/*'
-ss.public_header_files = 'Other/**/*.h'
+ss.source_files = 'CameraKit/Other/**/*'
+ss.public_header_files = 'CameraKit/Other/**/*.h'
 end
 
 
