@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT' 
   s.author       = { "LiuChaolong" => "1097920530@qq.com" }
   # s.social_media_url = "http://twitter.com/yulingtianxia"
-  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"68cafc1bef040f7801932e17afe48ac0a834e06e"}
+  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"a067419c155a3adfa8d1624391ccd14061d05747"}
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
@@ -23,7 +23,6 @@ s.subspec 'CLNetWorking' do |ss|
 ss.source_files = 'CLAFNetworking/**/*'
 ss.public_header_files = 'CLAFNetworking/**/*.h'
 ss.dependency 'AFNetworking'
-ss.library = 'resolv'
 end
 
 s.subspec 'CLQueueManager' do |ss|
@@ -79,6 +78,7 @@ end
 s.subspec 'Other' do |ss|
 ss.source_files = 'CameraKit/Other/**/*'
 ss.public_header_files = 'CameraKit/Other/**/*.h'
+ss.library = 'resolv'
 end
 
 

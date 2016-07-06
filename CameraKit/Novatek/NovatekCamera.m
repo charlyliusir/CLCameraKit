@@ -8,6 +8,7 @@
 #import "NovatekCamera.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import "GCDAsyncSocket.h"
+#import "CLXMLParser.h"
 
 @interface NovatekCamera () <GCDAsyncSocketDelegate>
 
