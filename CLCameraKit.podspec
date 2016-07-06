@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT' 
   s.author       = { "LiuChaolong" => "1097920530@qq.com" }
   # s.social_media_url = "http://twitter.com/yulingtianxia"
-  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"9392b90b6d4161a8b53c83ae550747e3d073df2c"}
+  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"68cafc1bef040f7801932e17afe48ac0a834e06e"}
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
@@ -33,15 +33,20 @@ ss.dependency 'CLCameraKit/CLNetWorking'
 end
 
 s.subspec 'Head' do |ss|
-ss.source_files = 'Head/**/*'
-ss.public_header_files = 'Head/**/*.h'
+ss.source_files = 'CameraKit/Head/**/*'
+ss.public_header_files = 'CameraKit/Head/**/*.h'
 end
 
 s.subspec 'Camera' do |ss|
 ss.source_files = 'CameraKit/Camera/**/*'
 ss.public_header_files = 'CameraKit/Camera/**/*.h'
+
 ss.dependency 'AFNetworking'
-#ss.dependency 'CLCameraKit/Const','CLCameraKit/CLQueueManager','CLCameraKit/Model'
+ss.dependency 'CLCameraKit/Const'
+ss.dependency 'CLCameraKit/CLQueueManager'
+ss.dependency 'CLCameraKit/Model'
+ss.dependency 'CLCameraKit/Other'
+
 end
 
 s.subspec 'Const' do |ss|
@@ -52,19 +57,22 @@ end
 s.subspec 'Model' do |ss|
 ss.source_files = 'CameraKit/Model/**/*'
 ss.public_header_files = 'CameraKit/Model/**/*.h'
+ss.dependency 'CLCameraKit/CLQueueManager'
+ss.dependency 'CLCameraKit/Const'
 end
 
 s.subspec 'Novatek' do |ss|
 ss.source_files = 'CameraKit/Novatek/**/*'
 ss.public_header_files = 'CameraKit/Novatek/**/*.h'
-#ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
+ss.dependency 'CLCameraKit/Camera'
 ss.dependency 'CocoaAsyncSocket'
 end
 
 s.subspec 'AIT' do |ss|
 ss.source_files = 'CameraKit/AIT/**/*'
 ss.public_header_files = 'CameraKit/AIT/**/*.h'
-#ss.dependency 'CLCameraKit/Const','CLCameraKit/CLNetWorking','CLCameraKit/Model'
+ss.dependency 'CLCameraKit/Const'
+ss.dependency 'CLCameraKit/Camera'
 ss.dependency 'CocoaAsyncSocket'
 end
 
@@ -72,7 +80,6 @@ s.subspec 'Other' do |ss|
 ss.source_files = 'CameraKit/Other/**/*'
 ss.public_header_files = 'CameraKit/Other/**/*.h'
 end
-
 
 
 end

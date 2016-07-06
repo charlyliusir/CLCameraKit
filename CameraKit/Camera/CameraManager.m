@@ -53,6 +53,19 @@
     
 }
 
+- (void)startDownload
+{
+    
+}
+- (void)stopDownload
+{
+    
+}
+- (void)updateProgress:(CLQueue *)linkQueue
+{
+    
+}
+
 - (void)ChangeNetWorking:(NSNotification *)notification
 {
     

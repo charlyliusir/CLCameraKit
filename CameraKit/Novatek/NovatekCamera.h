@@ -9,5 +9,5 @@
 #import "BaseCamera.h"
 
 @interface NovatekCamera : BaseCamera
-
+@property (nonatomic, strong)NSArray *queueArray;
 @end
