@@ -8,7 +8,6 @@
 #import "NovatekCamera.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import "GCDAsyncSocket.h"
-#import "CLXMLParser.h"
 
 @interface NovatekCamera () <GCDAsyncSocketDelegate>
 
@@ -96,6 +95,8 @@
         [sock readDataWithTimeout:-1 tag:tag];
         
     }];
+    
+    NSLog(@"%@", parser);
     
 }
 /*!
