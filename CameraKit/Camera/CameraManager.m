@@ -46,25 +46,32 @@
 }
 
 #pragma mark - nailQueueManager delegate
-- (void)loadOneFile:(CLQueue *)linkQueue
-{
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFITY_INIT_DOWNLOAD object:nil];
-    
-}
-
-- (void)startDownload
+/**
+ *  开始下载
+ */
+- (void)startDownload:(id)queueManager
 {
     
 }
-- (void)stopDownload
+/**
+ *  结束下载
+ */
+- (void)stopDownload:(id)queueManager
 {
     
 }
+/**
+ *  更新下载进度
+ */
 - (void)updateProgress:(CLQueue *)linkQueue queueManager:(id)queueManager
 {
     
 }
+/**
+ *  成功下载一个文件
+ *
+ *  @param linkQueue
+ */
 - (void)loadOneFile:(CLQueue *)linkQueue queueManager:(id)queueManager
 {
     
