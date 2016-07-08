@@ -61,10 +61,16 @@
 {
     
 }
-- (void)updateProgress:(CLQueue *)linkQueue
+- (void)updateProgress:(CLQueue *)linkQueue queueManager:(id)queueManager
 {
     
 }
+- (void)loadOneFile:(CLQueue *)linkQueue queueManager:(id)queueManager
+{
+    
+}
+
+
 
 - (void)ChangeNetWorking:(NSNotification *)notification
 {

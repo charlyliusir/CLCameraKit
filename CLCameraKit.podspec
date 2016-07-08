@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CLCameraKit"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "行车记录仪静态库"
   s.description  = <<-DESC
                     封装方法，方便使用
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT' 
   s.author       = { "LiuChaolong" => "1097920530@qq.com" }
   # s.social_media_url = "http://twitter.com/yulingtianxia"
-  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"b6f41327179035baad17d7d0f3793f7d31232e80"}
+  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"efec9bf8794db88ee879ece18a4897e6c1b1428d"}
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
