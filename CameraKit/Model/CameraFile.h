@@ -9,17 +9,24 @@
 #import "CLQueue.h"
 #import "CamertConst.h"
 
+typedef NS_ENUM(NSInteger, FileDownloadState) {
+    FileDownloadStateNono,
+    FileDownloadStateProgress,
+    FileDownloadStateEnd
+};
+
 @interface CameraFile : CLQueue
 
 @property (nonatomic, assign)CameraFileType fileType; // 文件类型
 @property (nonatomic, assign)FileSourceType fileSourceType; // 文件源地址
+@property (nonatomic, assign)CellState cameraCellState;
 @property (nonatomic, copy)NSString *fileURL; // 下载地址
 @property (nonatomic, copy)NSString *fileNailURL; // 缩略图下载地址
 @property (nonatomic, copy)NSString *fileDate; // 时间
 @property (nonatomic, copy)NSString *fileTime; // 时间
 @property (nonatomic, copy)NSNumber *fileSize; // 大小
 
-@property (nonatomic, assign)BOOL download;
+@property (nonatomic, assign)FileDownloadState download;
 
 @end
 

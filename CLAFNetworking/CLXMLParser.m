@@ -279,14 +279,23 @@
                 
                 NSMutableArray *elements = [elementValueObj mutableCopy];
                 [elements addObject:@{}];
-                mutableElementValue = @{cuElement:elements.copy};
+                NSMutableDictionary *dict = [elementValue mutableCopy];
+                [dict removeObjectForKey:cuElement];
+                [dict setObject:elements.copy forKey:cuElement];
+                mutableElementValue = dict;
                 
             } else {
                 
-                mutableElementValue = @{cuElement:@[elementValue[cuElement],@{}]};
+                NSArray *value = @[elementValue[cuElement],@{}];
+                NSMutableDictionary *dict = [elementValue mutableCopy];
+                [dict removeObjectForKey:cuElement];
+                [dict setObject:value forKey:cuElement];
+                
+                mutableElementValue = dict.copy;
+                
+//                mutableElementValue = @[elementValue, @{cuElement:@{}}];
                 
             }
-//            mutableElementValue = @[elementValue, @{cuElement:@{}}];
             
         } else {
             
@@ -343,25 +352,16 @@
     // 遍历所有没有成对的根结点
     if ([elementValue isKindOfClass:[NSDictionary class]]) {
         
-        // 创建一个可变字典，用于赋值
-        // 获取所有字典的key值
-        NSMutableDictionary *mutableDictionary = [elementValue mutableCopy];
-        
-        [mutableDictionary removeObjectForKey:cuElement];
-        [mutableDictionary setObject:self.elementValue forKey:cuElement];
-        
-        mutableElementValue = mutableDictionary.copy;
+        mutableElementValue = [self createElementVlaue:elementValue elementName:cuElement];
         
     }else if ([elementValue isKindOfClass:[NSArray class]]) {
         
         // 创建一个可变字典，用于赋值
         // 获取所有字典的key值
         NSMutableArray *mutableArray             = [elementValue mutableCopy];
-        NSMutableDictionary *mutableDictionary   = [[elementValue lastObject] mutableCopy];
         
-        [mutableDictionary removeObjectForKey:cuElement];
-        [mutableDictionary setObject:self.elementValue forKey:cuElement];
-        mutableArray[mutableArray.count-1] = mutableDictionary.copy;
+        id dict = [self createElementVlaue:[elementValue lastObject] elementName:cuElement];
+        mutableArray[mutableArray.count-1] = dict;
         
         mutableElementValue = mutableArray.copy;
         
@@ -369,6 +369,35 @@
     
     return mutableElementValue;
     
+}
+
+- (id)createElementVlaue:(NSDictionary *)elementValue elementName:(NSString *)cuElement
+{
+    id mutableElementValue = nil;
+    id value = elementValue[cuElement];
+    // 创建一个可变字典，用于赋值
+    // 获取所有字典的key值
+    NSMutableDictionary *mutableDictionary = [elementValue mutableCopy];
+    if ([value isKindOfClass:[NSDictionary class]]) {
+        
+        [mutableDictionary removeObjectForKey:cuElement];
+        [mutableDictionary setObject:self.elementValue forKey:cuElement];
+        
+        mutableElementValue = mutableDictionary.copy;
+        
+    } else {
+        
+        NSMutableArray *mutableValue = [value mutableCopy];
+        [mutableValue replaceObjectAtIndex:mutableValue.count-1 withObject:self.elementValue];
+        
+        [mutableDictionary removeObjectForKey:cuElement];
+        [mutableDictionary setObject:mutableValue.copy forKey:cuElement];
+        
+        mutableElementValue = mutableDictionary.copy;
+        
+    }
+    
+    return mutableElementValue;
 }
 
 @end

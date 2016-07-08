@@ -20,6 +20,7 @@
 #pragma mark -- contenttypes
 
 #define ContentTypes_Json @"application/json"
+#define ContentTypes_TextHtml @"text/html"
 
 #define ContentTypes_XML @"application/xml"
 #define ContentTypes_SoapXML @"application/soap+xml"

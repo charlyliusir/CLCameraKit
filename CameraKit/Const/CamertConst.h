@@ -19,8 +19,6 @@
 
 #define TakeCutURL @"/?custom=1&cmd=2018"
 
-#define UPLOAD_VIDEO_URLS @"http://autobot.im/server/autobot/video/detail/"
-
 #define NOTIFITY_INIT_DOWNLOAD @"InitProgress"
 #define USERDEFAULT_CAMERA_PIC_SIZE @"PicSize"
 #define USERDEFAULT_CAMERA_MOVIE_SIZE @"MovieSize"

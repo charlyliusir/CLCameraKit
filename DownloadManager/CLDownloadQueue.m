@@ -105,6 +105,7 @@
             while (index > 1) {
                 
                 pQueue = pQueue.nextQueue;
+                index --;
                 
             }
             

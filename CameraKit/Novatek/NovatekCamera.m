@@ -265,7 +265,7 @@
     
     [CLNetworkingKit RequestWithURL:requestURL parameters:NULL requestmethod:RequestMethodGet contenttype:ContentTypesXML responseblock:^(id responseObj, BOOL success, NSError *error) {
         
-        if (error) {
+        if (!error) {
             
             if ([responseObj isKindOfClass:[NSDictionary class]]) {
                 
@@ -310,9 +310,9 @@
     
     [CLNetworkingKit RequestWithURL:requestURL parameters:NULL requestmethod:RequestMethodGet contenttype:ContentTypesXML responseblock:^(id responseObj, BOOL success, NSError *error) {
        
-        if (!error&&[responseObj isKindOfClass:[NSArray class]]) {
+        if (!error&&[responseObj isKindOfClass:[NSDictionary class]]) {
             
-            self.queueArray = (NSArray *)responseObj;
+            self.queueArray = (NSDictionary *)responseObj;
             
         }
         
@@ -325,17 +325,12 @@
     
     if (_queueArray && _queueArray.count > 0) {
         
-        for (NSDictionary *dict in _queueArray) {
-            
-            NSString *cmdString= dict[@"cmd"];
-            NSString *statu   = dict[@"status"];
-            
-            if ([status isEqualToString:cmdString]) {
-                
-                response(YES, [statu intValue], self.cameraState);
-                
-            }
-        }
+        NSArray *cmdArr   = _queueArray[@"cmd"];
+        NSArray *statuArr = _queueArray[@"status"];
+        
+        NSInteger index = [cmdArr indexOfObject:status];
+        
+        response(YES, [statuArr[index] intValue], self.cameraState);
         
     }else{
         response(NO, -1, self.cameraState);
@@ -477,8 +472,19 @@
 - (void)setLiveStatus:(BOOL)liveStatus response:(BoolenResponse)response
 {
     [self RequestCMD:WIFIAPP_CMD_MOVIE_LIVEVIEW_START parameter:[self covertStringWithBoolen:liveStatus] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
+        
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithBoolen:liveStatus] cmd:WIFIAPP_CMD_MOVIE_LIVEVIEW_START];
+                
+            }
+            
             response(success,eyeState);
+            
+        }
+        
     }];
 }
 
@@ -699,8 +705,17 @@
 - (void)setAutoRecording:(BOOL)autoRecording response:(BoolenResponse)response{
     
     [self RequestCMD:WIFIAPP_CMD_MOVIE_AUDIO parameter:[self covertStringWithBoolen:autoRecording] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
-            response(success, eyeState);
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithBoolen:autoRecording] cmd:WIFIAPP_CMD_MOVIE_AUDIO];
+                
+            }
+            
+            response(success,eyeState);
+            
+        }
     }];
 }
 
@@ -729,8 +744,17 @@
  */
 - (void)setAutoRecord:(BOOL)autoRecord response:(BoolenResponse)response{
     [self RequestCMD:WIFIAPP_CMD_SET_AUTO_RECORDING parameter:[self covertStringWithBoolen:autoRecord] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
-            response(success, eyeState);
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithBoolen:autoRecord] cmd:WIFIAPP_CMD_SET_AUTO_RECORDING];
+                
+            }
+            
+            response(success,eyeState);
+            
+        }
     }];
 }
 
@@ -759,8 +783,17 @@
  */
 - (void)setRecordSize:(MOVIE_SIZE)recordSize response:(BoolenResponse)response{
     [self RequestCMD:WIFIAPP_CMD_MOVIE_REC_SIZE parameter:[self covertStringWithType:recordSize] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
-            response(success, eyeState);
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithType:recordSize] cmd:WIFIAPP_CMD_MOVIE_REC_SIZE];
+                
+            }
+            
+            response(success,eyeState);
+            
+        }
     }];
 }
 
@@ -789,8 +822,17 @@
  */
 - (void)setLiveSize:(MOVIE_LIVE_SIZE)liveSize response:(BoolenResponse)response{
     [self RequestCMD:WIFIAPP_CMD_MOVIE_LIVEVIEW_SIZE parameter:[self covertStringWithType:liveSize] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
-            response(success, eyeState);
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithType:liveSize] cmd:WIFIAPP_CMD_MOVIE_LIVEVIEW_SIZE];
+                
+            }
+            
+            response(success,eyeState);
+            
+        }
     }];
 }
 
@@ -819,8 +861,17 @@
  */
 - (void)setPhotoSize:(PHOTO_SIZE)photoSize response:(BoolenResponse)response{
     [self RequestCMD:WIFIAPP_CMD_CAPTURESIZE parameter:[self covertStringWithType:photoSize] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
-            response(success, eyeState);
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithType:photoSize] cmd:WIFIAPP_CMD_CAPTURESIZE];
+                
+            }
+            
+            response(success,eyeState);
+            
+        }
     }];
 }
 
@@ -849,8 +900,17 @@
  */
 - (void)setSensititySize:(GSENSOR)sensititySize response:(BoolenResponse)response{
     [self RequestCMD:WIFIAPP_CMD_MOVIE_GSENSOR_SENS parameter:[self covertStringWithType:sensititySize] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
-            response(success, eyeState);
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithType:sensititySize] cmd:WIFIAPP_CMD_MOVIE_GSENSOR_SENS];
+                
+            }
+            
+            response(success,eyeState);
+            
+        }
     }];
 }
 
@@ -879,8 +939,17 @@
  */
 - (void)setExposureSize:(EXPOSURE)exposureSize response:(BoolenResponse)response{
     [self RequestCMD:WIFIAPP_CMD_MOVIE_EV parameter:[self covertStringWithType:exposureSize] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
-        if (response)
-            response(success, eyeState);
+        if (response){
+            
+            if (success){
+                
+                [self setNewSetting:[self covertStringWithType:exposureSize] cmd:WIFIAPP_CMD_MOVIE_EV];
+                
+            }
+            
+            response(success,eyeState);
+            
+        }
     }];
 }
 
@@ -1009,43 +1078,36 @@
     [self RequestCMD:WIFIAPP_CMD_FILELIST DataResponse:^(BOOL success, id obj, CameraState eyeState) {
         if (response) {
             
-            if ([obj isKindOfClass:[NSDictionary class]]) {
-                
-                response(success, @[], eyeState);
-                
-            }else {
-                
-                if (success) {
-                    NSArray *fileList = (NSArray *)obj;
-                    NSMutableArray *files = [[NSMutableArray alloc] init];
-                    for (NSDictionary *dict in fileList) {
-                        NSDictionary *file = dict[@"allfile"][@"file"];
-                        NSString *fileName = file[@"name"];
-                        NSString *fileSize = file[@"size"];
-                        NSString *filePath = file[@"fpath"];
-                        
-                        NSArray *isTrue = [fileName componentsSeparatedByString:@"_"];
-                        if (isTrue.count>=3) {
-                            NSString *furl = [[NSString stringWithFormat:@"%@%@", NovatekIP, [[filePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"] stringByReplacingOccurrencesOfString:@"A:" withString:@""]] lowercaseString];
-                            NSString *name = [[fileName stringByReplacingOccurrencesOfString:@"_" withString:@""] lowercaseString];
-                            
-                            CameraFile *model = [[CameraFile alloc] initQueueWithDownloadURL:furl name:name];
-                            // 对model操作
-                            model.name = name;
-                            model.fileSize = @([fileSize integerValue]);
-                            model.fileURL  = furl;
-                            model.fileNailURL = [NSString stringWithFormat:@"%@?custom=%@&cmd=%@", model.fileURL, CUSTOM, WIFIAPP_CMD_THUMB];
-                            
-                            [files addObject:model];
-                        }
-                    }
+            if (success) {
+                NSArray *fileList = obj[@"allfile"];
+                NSMutableArray *files = [[NSMutableArray alloc] init];
+                for (NSDictionary *dict in fileList) {
+                    NSDictionary *file = dict[@"file"];
+                    NSString *fileName = file[@"name"];
+                    NSString *fileSize = file[@"size"];
+                    NSString *filePath = file[@"fpath"];
                     
-                    response(success, files, eyeState);
-                }else{
-                    response(success, obj, eyeState);
+                    NSArray *isTrue = [fileName componentsSeparatedByString:@"_"];
+                    if (isTrue.count>=3) {
+                        NSString *furl = [[NSString stringWithFormat:@"%@%@", NovatekIP, [[filePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"] stringByReplacingOccurrencesOfString:@"A:" withString:@""]] lowercaseString];
+                        NSString *name = [[fileName stringByReplacingOccurrencesOfString:@"_" withString:@""] lowercaseString];
+                        
+                        CameraFile *model = [[CameraFile alloc] initQueueWithDownloadURL:furl name:name];
+                        // 对model操作
+                        model.name = name;
+                        model.fileSize = @([fileSize integerValue]);
+                        model.fileURL  = furl;
+                        model.fileNailURL = [NSString stringWithFormat:@"%@?custom=%@&cmd=%@", model.fileURL, CUSTOM, WIFIAPP_CMD_THUMB];
+                        
+                        [files addObject:model];
+                    }
                 }
                 
+                response(success, files, eyeState);
+            }else{
+                response(success, obj, eyeState);
             }
+            
         }
         
     }];
@@ -1172,5 +1234,16 @@
     }
 }
 
+
+- (void)setNewSetting:(NSString *)obj cmd:(NSString *)cmd
+{
+    NSMutableArray *cmdArray    = [_queueArray[@"cmd"] mutableCopy];
+    NSMutableArray *statusArary = [_queueArray[@"status"] mutableCopy];
+    
+    NSInteger index = [cmdArray indexOfObject:cmd];
+    [statusArary replaceObjectAtIndex:index withObject:obj];
+    
+    _queueArray = @{@"cmd":cmdArray.copy, @"status":statusArary.copy};
+}
 
 @end

@@ -62,8 +62,9 @@
 // 本地缩略图文件地址
 + (NSString *)localNailFilePath:(CameraFileType)fileType
 {
+    NSString *filePath = [NSString stringWithFormat:@"/%@",LOCAL_NAIL_FILE_LIST[fileType]];
     
-    NSString *localNailPath = [[self doucmentPath] stringByAppendingString:LOCAL_NAIL_FILE_LIST[fileType]];
+    NSString *localNailPath = [[self doucmentPath] stringByAppendingString:filePath];
     [self createFilePath:localNailPath];
     
     return localNailPath;
@@ -74,7 +75,9 @@
 + (NSString *)localFilePath:(CameraFileType)fileType
 {
     
-    NSString *localFilePath = [[self doucmentPath] stringByAppendingString:LOCAL_FILE_LIST[fileType]];
+    NSString *filePath = [NSString stringWithFormat:@"/%@",LOCAL_FILE_LIST[fileType]];
+    
+    NSString *localFilePath = [[self doucmentPath] stringByAppendingString:filePath];
     [self createFilePath:localFilePath];
     
     return localFilePath;
@@ -93,11 +96,13 @@
         
         if ([file.name hasSuffix:@".jpg"]) {
             
+            file.folder = LOCAL_PHTOT_FILE_NAME;
+            
             for (CameraFile *localFile in localFileList) {
                 
                 if ([localFile.name isEqualToString:file.name]) {
                     
-                    file.download = YES;
+                    file.download = FileDownloadStateEnd;
                     
                 }
             }
@@ -120,13 +125,18 @@
         
         pictureSize += [file.fileSize integerValue];
         
-        CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
-        
-        if (![[self fileManager] fileExistsAtPath:queue.path]) {
+        if (file.fileNailURL&&![file.fileNailURL hasPrefix:@"file://"]) {
             
-            [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+            CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
+            
+            if (![[self fileManager] fileExistsAtPath:queue.path]) {
+                
+                [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+                
+            }
             
         }
+        
         
         if ([[dict allKeys] containsObject:file.fileDate]) {
             
@@ -180,11 +190,15 @@
         
         movieSize += [file.fileSize integerValue];
 
-        CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
-        
-        if (![[self fileManager] fileExistsAtPath:queue.path]) {
+        if (file.fileNailURL&&![file.fileNailURL hasPrefix:@"file://"]) {
             
-            [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+            CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
+            
+            if (![[self fileManager] fileExistsAtPath:queue.path]) {
+                
+                [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+                
+            }
             
         }
         
@@ -192,11 +206,13 @@
         
         if ([file.name hasSuffix:@".mov"]) {
             
+            file.folder = LOCAL_Movie_FILE_NAME;
+            
             for (CameraFile *localFile in localFileList) {
                 
                 if ([localFile.name isEqualToString:file.name]) {
                     
-                    file.download = YES;
+                    file.download = FileDownloadStateEnd;
                     
                 }
             }
@@ -238,6 +254,8 @@
     for (NSString *fileName in fileList) {
         
         CameraFile *file    = [self createLocalFile:fileName];
+        file.path = [[localPhotoPath stringByAppendingString:@"/"] stringByAppendingString:fileName];
+        file.download = FileDownloadStateEnd;
         
         if ([[dict allKeys] containsObject:file.fileDate]) {
             
@@ -273,6 +291,8 @@
     for (NSString *fileName in fileList) {
         
         CameraFile *file = [self createLocalFile:fileName];
+        file.path = [[localPhotoPath stringByAppendingString:@"/"] stringByAppendingString:fileName];
+        file.download = FileDownloadStateEnd;
         
         [dataRow addObject:file];
     }
@@ -297,6 +317,8 @@
     for (NSString *fileName in fileList) {
         
         CameraFile *file = [self createLocalFile:fileName];
+        file.path = [[localPhotoPath stringByAppendingString:@"/"] stringByAppendingString:fileName];
+        file.download = FileDownloadStateEnd;
         
         [dataRow addObject:file];
     }

@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT' 
   s.author       = { "LiuChaolong" => "1097920530@qq.com" }
   # s.social_media_url = "http://twitter.com/yulingtianxia"
-  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"b7dbfcc4fa0128dc3286e9d3a25463a2b9079c68"}
+  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"b6f41327179035baad17d7d0f3793f7d31232e80"}
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true

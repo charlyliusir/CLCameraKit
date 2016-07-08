@@ -11,6 +11,8 @@
 #import <AVFoundation/AVAsset.h>
 #import "CamertConst.h"
 
+#define UPLOAD_VIDEO_URLS @"http://autobot.im/server/autobot/video/detail/"
+
 @implementation CameraShort
 
 - (void)setVideoName:(NSString *)videoName

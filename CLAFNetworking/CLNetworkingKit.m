@@ -112,7 +112,7 @@
         // 网络请求返回样式序列号
         netManager.responseSerializer = [AFJSONResponseSerializer serializer];
         // 网络请求返回数据的格式
-//        netManager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:ContentTypes_Json];
+        netManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:ContentTypes_TextHtml, ContentTypes_Json, nil];
         
     } else if (content == ContentTypesXML){
         
@@ -170,6 +170,10 @@
         } else if(content == ContentTypesText){
             
             responseObject = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+            
+            responses(responseObject, YES, NULL);
+            
+        } else {
             
             responses(responseObject, YES, NULL);
             
@@ -244,6 +248,9 @@
     NSURLSessionUploadTask *uploadTask;
     
     AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    AFJSONResponseSerializer *serializer = [AFJSONResponseSerializer serializer];
+    serializer.acceptableContentTypes    = [NSSet setWithObjects:ContentTypes_TextHtml, ContentTypes_Json, nil];
+    manager.responseSerializer = serializer;
     
     NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:[self getRequestMethod:method] URLString:URL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         
@@ -284,6 +291,9 @@
     NSURLSessionDownloadTask *downloadTask;
     
     AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+    AFJSONResponseSerializer *serializer = [AFJSONResponseSerializer serializer];
+    serializer.acceptableContentTypes    = [NSSet setWithObjects:ContentTypes_TextHtml, ContentTypes_Json, nil];
+    manager.responseSerializer = serializer;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:URL]];
     

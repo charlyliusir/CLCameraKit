@@ -41,6 +41,17 @@
     
 }
 
+- (void)setCameraCellState:(CellState)cameraCellState
+{
+    
+    if(self.download==FileDownloadStateProgress){
+        _cameraCellState = CellStateProgress;
+    }else{
+        _cameraCellState = cameraCellState;
+    }
+    
+}
+
 - (NSString *)covertDateWithString:(NSString *)dataString
 {
     NSMutableString *covertString = [NSMutableString stringWithString:dataString];

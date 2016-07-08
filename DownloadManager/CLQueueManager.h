@@ -10,30 +10,30 @@
 #import "CLDownloadQueue.h"
 #import "CLNetworkingKit.h"
 
-// 下载管理类,可以实现队列下载【单个任务单个任务下载】
-typedef void(^QueueManagerProgress) (id queueManager, CLQueue *linkQueue);
-
 @protocol CLQueueManagerDelegate <NSObject>
 /**
  *  开始下载
  */
-- (void)startDownload;
+- (void)startDownload:(id)queueManager;
 /**
  *  结束下载
  */
-- (void)stopDownload;
+- (void)stopDownload:(id)queueManager;
 /**
  *  更新下载进度
  */
-- (void)updateProgress:(CLQueue *)linkQueue;
+- (void)updateProgress:(CLQueue *)linkQueue queueManager:(id)queueManager;
 /**
  *  成功下载一个文件
  *
  *  @param linkQueue
  */
-- (void)loadOneFile:(CLQueue *)linkQueue;
+- (void)loadOneFile:(CLQueue *)linkQueue queueManager:(id)queueManager;
 
 @end
+
+// 下载管理类,可以实现队列下载【单个任务单个任务下载】
+typedef void(^QueueManagerProgress)(id queueManager, CLQueue *linkQueue);
 
 @interface CLQueueManager : NSObject
 

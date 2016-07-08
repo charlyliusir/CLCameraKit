@@ -65,9 +65,9 @@ typedef NS_ENUM(NSInteger, QueueState) {
             // 开始下载
             self.state = QueueStateStart;
             
-            if (_delegate && [_delegate respondsToSelector:@selector(startDownload)])
+            if (_delegate && [_delegate respondsToSelector:@selector(startDownload:)])
             {
-                [_delegate startDownload];
+                [_delegate startDownload:queue];
             }
             
             [self downloadWithLinkQueue];
@@ -128,6 +128,11 @@ typedef NS_ENUM(NSInteger, QueueState) {
     {
         self.state = QueueStateStop;
         NSLog(@"stop");
+        [self->_downloadQueueList removeAllObjects];
+        [self->_downloadingQueueList removeAllObjects];
+        if (_delegate &&[_delegate respondsToSelector:@selector(stopDownload:)]) {
+            [_delegate stopDownload:self];
+        }
         return;
     }
     
@@ -135,33 +140,38 @@ typedef NS_ENUM(NSInteger, QueueState) {
     
     self.task = [CLNetworkingKit DownloadWithURL:queue.url cachepath:queue.path progress:^(NSProgress *downloadProgress) {
         
-        uint64_t completed = downloadProgress.completedUnitCount;
-        uint64_t total     = downloadProgress.totalUnitCount;
+//        uint64_t completed = downloadProgress.completedUnitCount;
+//        uint64_t total     = downloadProgress.totalUnitCount;
+//        queue.progress = (completed*1.0f)/(total*1.0f);
         
-        queue.progress = (completed*1.0f)/(total*1.0f);
-        [self notifyProgress:queue];
+        if(downloadProgress.fractionCompleted-queue.progress>0.02f)
+        {
+            queue.progress = downloadProgress.fractionCompleted;
+            [self notifyProgress:queue];
+        }
         
     } responseblock:^(id responseObj, BOOL success, NSError *error) {
         
         if (error) {
             
-            NSLog(@"error : %@", error);
-            // -999 取消网络请求
-            if (error.code!=-999)
-            {
-                [self downloadWithLinkQueue];
-            }
+            queue.progress = 0.0f;
+            [self DeQueue];
+//            NSLog(@"error : %@", error);
+//            // -999 取消网络请求  -1002 不支持的URL
+//            if (error.code!=-999&&error.code!=-1002)
+//            {
+//                [self downloadWithLinkQueue];
+//            }
             
         } else
         {
-            
-            if (_delegate && [_delegate respondsToSelector:@selector(loadOneFile:)]) {
-                [_delegate loadOneFile:queue.copy];
-            }
-            
             queue.progress = 1.0f;
             [self notifyProgress:queue];
-//            [self->_downloadQueueList addObject:queue.copy];
+            [self->_downloadQueueList addObject:queue];
+            if (_delegate && [_delegate respondsToSelector:@selector(loadOneFile:queueManager:)]) {
+                [_delegate loadOneFile:queue queueManager:self];
+            }
+            
             [self DeQueue];
         }
         
@@ -184,9 +194,9 @@ typedef NS_ENUM(NSInteger, QueueState) {
         self.progress(self, queue);
     }
     
-    if (_delegate && [_delegate respondsToSelector:@selector(updateProgress:)])
+    if (_delegate && [_delegate respondsToSelector:@selector(updateProgress:queueManager:)])
     {
-        [_delegate updateProgress:queue];
+        [_delegate updateProgress:queue queueManager:self];
     }
 }
 

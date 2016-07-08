@@ -46,7 +46,7 @@
 + (NSString *)covertTimeWithString:(NSString *)timeString;
 
 + (NSURL *)movieURLPath:(CameraFile *)file;
-
++ (UIImage*) thumbnailImageForVideo:(NSURL *)videoURL atTime:(NSTimeInterval)time;
 
 // 将下载的视频合成缩略图
 + (BOOL)saveFileNailWithType:(CameraFileType )type

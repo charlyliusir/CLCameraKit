@@ -167,20 +167,25 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
         }
         return files;
     }else if ([fileList isKindOfClass:[NSDictionary class]] && fileList[@"file"]) {
-        NSDictionary *fileDic = fileList[@"file"];
-        NSInteger fileSize = [[fileDic objectForKey:@"size"] integerValue];
-        NSString *OriginName = [fileDic objectForKey:@"name"];
-        NSString *path = [self formattedFpathString:OriginName];
-        NSString *name = [[self formattedNameString:OriginName] lowercaseString];
-        NSString *furl  = [NSString stringWithFormat:@"http://%@%@",[AITCameraCommand CAMERA_IP],path];
-        NSString *url = [[NSBundle mainBundle] pathForResource:@"bg_drivingrecord_photo_default.png" ofType:nil];
         
-        CameraFile *model  = [[CameraFile alloc] initQueueWithDownloadURL:furl name:name];
-        // 对model操作
-        model.fileURL      = furl;
-        model.fileSize = @(fileSize);
-        model.fileNailURL = [NSString stringWithFormat:@"file://%@",url];
-        [files addObject:model];
+        for (NSDictionary *dict  in fileList[@"file"]) {
+            
+            NSInteger fileSize = [[dict objectForKey:@"size"] integerValue];
+            NSString *OriginName = [dict objectForKey:@"name"];
+            NSString *path = [self formattedFpathString:OriginName];
+            NSString *name = [[self formattedNameString:OriginName] lowercaseString];
+            NSString *furl  = [NSString stringWithFormat:@"http://%@%@",[AITCameraCommand CAMERA_IP],path];
+            NSString *url = [[NSBundle mainBundle] pathForResource:@"bg_drivingrecord_photo_default.png" ofType:nil];
+            
+            CameraFile *model  = [[CameraFile alloc] initQueueWithDownloadURL:furl name:name];
+            // 对model操作
+            model.fileURL      = furl;
+            model.fileSize = @(fileSize);
+            model.fileNailURL = [NSString stringWithFormat:@"file://%@",url];
+            [files addObject:model];
+            
+        }
+        
         return files;
     }
     else {
