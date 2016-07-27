@@ -1091,8 +1091,8 @@
                     if (isTrue.count>=3) {
                         NSString *furl = [[NSString stringWithFormat:@"%@%@", NovatekIP, [[filePath stringByReplacingOccurrencesOfString:@"\\" withString:@"/"] stringByReplacingOccurrencesOfString:@"A:" withString:@""]] lowercaseString];
                         NSString *name = [[fileName stringByReplacingOccurrencesOfString:@"_" withString:@""] lowercaseString];
-                        
-                        CameraFile *model = [[CameraFile alloc] initQueueWithDownloadURL:furl name:name];
+                        NSString *folder = [name hasSuffix:@"jpg"]?LOCAL_FILE_LIST[0]:LOCAL_FILE_LIST[1];
+                        CameraFile *model = [[CameraFile alloc] initQueueWithDownloadURL:furl folder:folder name:name];
                         // 对model操作
                         model.name = name;
                         model.fileSize = @([fileSize integerValue]);
@@ -1122,7 +1122,7 @@
  @result void
  */
 - (void)deleteFile:(CameraFile *)file response:(BoolenResponse)response{
-    [self RequestCMD:WIFIAPP_CMD_DELETE_ONE parameter:NULL string:file.path BoolenResponse:^(BOOL success, CameraState eyeState) {
+    [self RequestCMD:WIFIAPP_CMD_DELETE_ONE parameter:NULL string:file.name BoolenResponse:^(BOOL success, CameraState eyeState) {
         if (response)
             response(success, eyeState);
     }];

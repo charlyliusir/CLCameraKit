@@ -51,11 +51,6 @@
         NSString *namePath   = @"";
         if (folder) {
             folderPath = [NSString stringWithFormat:@"/%@",folder];
-            NSFileManager *fileManager = [NSFileManager defaultManager];
-            NSString *fpath = [[self library] stringByAppendingPathComponent:folderPath];
-            if (![fileManager fileExistsAtPath:fpath]) {
-                [fileManager createDirectoryAtPath:fpath withIntermediateDirectories:YES attributes:NULL error:NULL];
-            }
         }
         if (name) {
             namePath   = [NSString stringWithFormat:@"/%@",name];
@@ -65,6 +60,12 @@
         self.name= name;
         self.folder = folder;
         self.path= [[[self library] stringByAppendingPathComponent:folderPath] stringByAppendingPathComponent:namePath];
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSString *fpath = [[self library] stringByAppendingPathComponent:folderPath];
+        if (![fileManager fileExistsAtPath:fpath]) {
+            [fileManager createDirectoryAtPath:fpath withIntermediateDirectories:YES attributes:NULL error:NULL];
+        }
         
     }
     
@@ -80,13 +81,6 @@
         NSString *namePath   = [NSString stringWithFormat:@"/%@",self.name];
         _folder = folder;
         self.path = [[[self library] stringByAppendingPathComponent:folderPath] stringByAppendingPathComponent:namePath];
-        
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        folderPath = [[self library] stringByAppendingPathComponent:folderPath];
-        if (![fileManager fileExistsAtPath:folderPath]) {
-            [fileManager createDirectoryAtPath:folderPath withIntermediateDirectories:YES attributes:NULL error:NULL];
-        }
-        
     }
 }
 

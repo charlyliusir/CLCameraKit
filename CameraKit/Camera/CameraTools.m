@@ -98,6 +98,30 @@
             
             file.folder = LOCAL_PHTOT_FILE_NAME;
             
+            if (file.fileNailURL&&![file.fileNailURL hasPrefix:@"file://"]) {
+                
+                CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
+                
+                if (![[self fileManager] fileExistsAtPath:queue.path]) {
+                    
+                    [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+                    
+                }
+                
+            } else if ([file.fileNailURL hasPrefix:@"file://"]) {
+                
+                NSString *URL = [file.url stringByReplacingOccurrencesOfString:@"SD" withString:@"thumb"];
+                
+                CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:URL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
+                
+                if (![[self fileManager] fileExistsAtPath:queue.path]) {
+                    
+                    [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+                    
+                }
+                
+            }
+            
             for (CameraFile *localFile in localFileList) {
                 
                 if ([localFile.name isEqualToString:file.name]) {
@@ -124,19 +148,6 @@
     for (CameraFile *file in dataRow) {
         
         pictureSize += [file.fileSize integerValue];
-        
-        if (file.fileNailURL&&![file.fileNailURL hasPrefix:@"file://"]) {
-            
-            CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
-            
-            if (![[self fileManager] fileExistsAtPath:queue.path]) {
-                
-                [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
-                
-            }
-            
-        }
-        
         
         if ([[dict allKeys] containsObject:file.fileDate]) {
             
@@ -189,24 +200,36 @@
     for (CameraFile *file in fileList) {
         
         movieSize += [file.fileSize integerValue];
-
-        if (file.fileNailURL&&![file.fileNailURL hasPrefix:@"file://"]) {
-            
-            CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
-            
-            if (![[self fileManager] fileExistsAtPath:queue.path]) {
-                
-                [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
-                
-            }
-            
-        }
         
         file.fileSourceType = FileSourceTypeCamera;
         
         if ([file.name hasSuffix:@".mov"]) {
             
             file.folder = LOCAL_Movie_FILE_NAME;
+            
+            if (file.fileNailURL&&![file.fileNailURL hasPrefix:@"file://"]) {
+                
+                CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:file.fileNailURL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
+                
+                if (![[self fileManager] fileExistsAtPath:queue.path]) {
+                    
+                    [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+                    
+                }
+                
+            } else if ([file.fileNailURL hasPrefix:@"file://"]) {
+                
+                NSString *URL = [file.url stringByReplacingOccurrencesOfString:@"SD" withString:@"thumb"];
+                
+                CLQueue *queue = [[CLQueue alloc] initQueueWithDownloadURL:URL folder:LOCAL_NAIL_FILE_LIST[file.fileType] name:file.name];
+                
+                if (![[self fileManager] fileExistsAtPath:queue.path]) {
+                    
+                    [[[CameraManager sharedCameraManager] nailQueueManager] EnQueue:queue];
+                    
+                }
+                
+            }
             
             for (CameraFile *localFile in localFileList) {
                 

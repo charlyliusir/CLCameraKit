@@ -73,7 +73,11 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
         NSLog(@"cutName: %@", dict[@"CURNAME"]);
         
         if ([dict[@"POWER"] isEqualToString:@"POWEROFF"]) {
+            
             [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFY_CAMERA_UNINORIGIN object:dict[@"CURNAME"]];
+            [self setState:CameraStateDisConnected];
+        }else if ([dict[@"POWER"] isEqualToString:@"POWERON"]){
+            [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFY_CAMERA_TAKEPHOTO object:dict[@"CURNAME"]];
         }
         
         return true;
@@ -158,7 +162,7 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
             NSString *furl  = [NSString stringWithFormat:@"http://%@%@",[AITCameraCommand CAMERA_IP],path];
             NSString *url = [[NSBundle mainBundle] pathForResource:@"bg_drivingrecord_photo_default.png" ofType:nil];
             
-            CameraFile *model  = [[CameraFile alloc] initQueueWithDownloadURL:furl name:name];
+            CameraFile *model  = [[CameraFile alloc] initQueueWithDownloadURL:furl folder:LOCAL_NAIL_FILE_LIST[0] name:name];
             // 对model操作
             model.fileURL      = furl;
             model.fileSize = @(fileSize);
@@ -168,7 +172,9 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
         return files;
     }else if ([fileList isKindOfClass:[NSDictionary class]] && fileList[@"file"]) {
         
-        for (NSDictionary *dict  in fileList[@"file"]) {
+        if ([fileList[@"file"] isKindOfClass:[NSDictionary class]]) {
+            
+            NSDictionary *dict = fileList[@"file"];
             
             NSInteger fileSize = [[dict objectForKey:@"size"] integerValue];
             NSString *OriginName = [dict objectForKey:@"name"];
@@ -177,13 +183,36 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
             NSString *furl  = [NSString stringWithFormat:@"http://%@%@",[AITCameraCommand CAMERA_IP],path];
             NSString *url = [[NSBundle mainBundle] pathForResource:@"bg_drivingrecord_photo_default.png" ofType:nil];
             
-            CameraFile *model  = [[CameraFile alloc] initQueueWithDownloadURL:furl name:name];
+            NSString *folder = [name hasSuffix:@"jpg"]?LOCAL_FILE_LIST[0]:LOCAL_FILE_LIST[1];
+            
+            CameraFile *model  = [[CameraFile alloc] initQueueWithDownloadURL:furl folder:folder name:name];
             // 对model操作
             model.fileURL      = furl;
             model.fileSize = @(fileSize);
             model.fileNailURL = [NSString stringWithFormat:@"file://%@",url];
             [files addObject:model];
             
+        } else if ([fileList[@"file"] isKindOfClass:[NSArray class]]){
+            
+            for (NSDictionary *dict  in fileList[@"file"]) {
+                
+                NSInteger fileSize = [[dict objectForKey:@"size"] integerValue];
+                NSString *OriginName = [dict objectForKey:@"name"];
+                NSString *path = [self formattedFpathString:OriginName];
+                NSString *name = [[self formattedNameString:OriginName] lowercaseString];
+                NSString *furl  = [NSString stringWithFormat:@"http://%@%@",[AITCameraCommand CAMERA_IP],path];
+                NSString *url = [[NSBundle mainBundle] pathForResource:@"bg_drivingrecord_photo_default.png" ofType:nil];
+                
+                NSString *folder = [name hasSuffix:@"jpg"]?LOCAL_FILE_LIST[0]:LOCAL_FILE_LIST[1];
+                
+                CameraFile *model  = [[CameraFile alloc] initQueueWithDownloadURL:furl folder:folder name:name];
+                // 对model操作
+                model.fileURL      = furl;
+                model.fileSize = @(fileSize);
+                model.fileNailURL = [NSString stringWithFormat:@"file://%@",url];
+                [files addObject:model];
+                
+            }
         }
         
         return files;
@@ -209,11 +238,10 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
     }
     NSString *str1 = [last substringFromIndex:index];
     str1 = [str1 stringByReplacingOccurrencesOfString:@"-" withString:@""];
-    NSMutableString *str2 = [@"20" stringByAppendingString:str1].mutableCopy;
-//    [str2 insertString:@"_" atIndex:4];
-//    [str2 insertString:@"_" atIndex:9];
-//    [str2 insertString:@"_" atIndex:16];
-    return str2;
+    if (![str1 hasPrefix:@"20"]) {
+        str1 = [@"20" stringByAppendingString:str1];
+    }
+    return str1;
     
 }
 - (NSString *)formattedFpathString:(NSString *)name
@@ -462,8 +490,6 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
                 [self setState:CameraStateRecord];
             }else if (eyeState == CameraStateRecord && recordStatus == NO) {
                 [self setState:CameraStateConnected];
-//                self.statusDic[@""] = @"0";
-//                [self getQuereyStatus];
             }
             if (response)
                 response(success,self.cameraState);
@@ -972,7 +998,8 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
  */
 - (void)deleteFile:(CameraFile *)file
           response:(BoolenResponse)response{
-    NSString *url = [AITCameraCommand commandDelFileUrl:[file.path stringByReplacingOccurrencesOfString: @"/" withString:@"$"]];
+    NSString *name = [file.fileURL substringFromIndex:17];
+    NSString *url = [AITCameraCommand commandDelFileUrl:[name stringByReplacingOccurrencesOfString: @"/" withString:@"$"]];
     [self RequestURL:url DataResponse:^(BOOL success, id obj, CameraState eyeState) {
         response(success, eyeState);
     }];
@@ -1000,7 +1027,6 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
     NSString *url = [AITCameraCommand commandCheckSDCard];
     [self RequestURL:url DataResponse:^(BOOL success, id obj, CameraState eyeState) {
         // 判断
-        
         NSDictionary *dict = [AITCameraCommand buildResultDictionary:obj];
         NSString *statusValue = dict[@"Camera.Menu.SDIsExist"];
         if ([statusValue containsString:@"TRUE"]) {

@@ -140,9 +140,8 @@ typedef NS_ENUM(NSInteger, QueueState) {
     
     self.task = [CLNetworkingKit DownloadWithURL:queue.url cachepath:queue.path progress:^(NSProgress *downloadProgress) {
         
-//        uint64_t completed = downloadProgress.completedUnitCount;
-//        uint64_t total     = downloadProgress.totalUnitCount;
-//        queue.progress = (completed*1.0f)/(total*1.0f);
+        NSLog(@"download URL: %@", queue.url);
+        NSLog(@"download Progress : %.2f", downloadProgress.fractionCompleted);
         
         if(downloadProgress.fractionCompleted-queue.progress>0.02f)
         {
@@ -156,12 +155,6 @@ typedef NS_ENUM(NSInteger, QueueState) {
             
             queue.progress = 0.0f;
             [self DeQueue];
-//            NSLog(@"error : %@", error);
-//            // -999 取消网络请求  -1002 不支持的URL
-//            if (error.code!=-999&&error.code!=-1002)
-//            {
-//                [self downloadWithLinkQueue];
-//            }
             
         } else
         {
@@ -171,7 +164,7 @@ typedef NS_ENUM(NSInteger, QueueState) {
             if (_delegate && [_delegate respondsToSelector:@selector(loadOneFile:queueManager:)]) {
                 [_delegate loadOneFile:queue queueManager:self];
             }
-            
+            sleep(1);
             [self DeQueue];
         }
         

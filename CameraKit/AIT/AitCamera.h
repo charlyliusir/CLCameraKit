@@ -10,4 +10,8 @@
 
 @interface AitCamera : BaseCamera
 @property (nonatomic, strong)NSDictionary *statusDic;
+
+- (NSString *)formattedNameString:(NSString *)name;
+- (NSString *)formattedFpathString:(NSString *)name;
+
 @end

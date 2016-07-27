@@ -16,9 +16,10 @@
 
 #define NOTIFY_CAMERA_CHANGESTATE @"changeState" // WiFi连接断开
 #define NOTIFY_CAMERA_UNCONNECTED @"unconnected" // 行车记录仪断开连接
-#define NOTIFY_CAMERA_UNINORIGIN @"uninorigin"  // 行车记录仪断电
+#define NOTIFY_CAMERA_UNINORIGIN @"uninorigin"   // 行车记录仪断电
+#define NOTIFY_CAMERA_TAKEPHOTO @"takephoto"     // 行车记录仪拍照
 #define NOTIFY_CAMERA_HASLASTUSER @"haslastuser" // 有上一个用户
-#define NOTIFY_CAMERA_FULLSDCARD @"sdcard_full" // 存储已满
+#define NOTIFY_CAMERA_FULLSDCARD @"sdcard_full"  // 存储已满
 
 @interface BaseCamera : NSObject
 

@@ -529,6 +529,7 @@
             response(success, type, eyeState);
         }
     }];
+    
 }
 
 - (void)removeUser:(BoolenResponse)response
