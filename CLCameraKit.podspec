@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "CLCameraKit"
-  s.version      = "0.0.2"
+  s.version      = "0.0.4"
   s.summary      = "行车记录仪静态库"
   s.description  = <<-DESC
                     封装方法，方便使用
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT' 
   s.author       = { "LiuChaolong" => "1097920530@qq.com" }
   # s.social_media_url = "http://twitter.com/yulingtianxia"
-  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"3b2f45f437c8b1c58e9e43e9ab3b6b25375feed7"}
+  s.source       = { :git => "https://github.com/Lclmyname/CLCameraKit.git", :tag => s.version.to_s, :commit=>"e2cde38dd87a45af86861253e1539433d1d51a73"}
 
   s.platform     = :ios, '8.0'
   s.requires_arc = true
@@ -70,7 +70,7 @@ end
 
 s.subspec 'ADNS' do |ss|
 ss.source_files = 'CameraKit/ADNS/**/*'
-ss.public_header_files = 'CameraKit/Novatek/**/*.h'
+ss.public_header_files = 'CameraKit/ADNS/**/*.h'
 ss.dependency 'CLCameraKit/Const'
 ss.dependency 'CLCameraKit/Camera'
 ss.dependency 'CocoaAsyncSocket'
