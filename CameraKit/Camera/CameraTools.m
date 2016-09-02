@@ -162,7 +162,6 @@
         }
         
     }
-    
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFITY_INIT_DOWNLOAD object:NULL];
     
     [[NSUserDefaults standardUserDefaults] setInteger:pictureSize forKey:USERDEFAULT_CAMERA_PIC_SIZE];

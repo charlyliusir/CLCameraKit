@@ -71,10 +71,21 @@
 - (void)getCardState:(TypeResponse)response{ }
 - (void)removeUser:(BoolenResponse)response{ }
 - (void)resetCard:(BoolenResponse)response{ }
-- (void)getRecordState:(DataResponse)response{ }
 
 
 - (void)getVersion:(DataResponse)response{ }
 - (void)updateVersion:(DataResponse)response{ }
+
+- (void)makeShortMovie:(BoolenResponse)response{ }
+- (void)playbackMoive:(NSData *)movieObject response:(BoolenResponse)response{ }
+- (void)getRecordState:(DataResponse)response{ }
+- (void)getAudioRecordState:(DataResponse)response{ }
+- (void)getAdasState:(DataResponse)response{ }
+- (void)setHDR:(Byte)hdr response:(BoolenResponse)response{ }
+- (void)setOSD:(Byte)osd response:(BoolenResponse)response{ }
+- (void)setAudioPlay:(NSData *)audioPlayObject response:(BoolenResponse)response{ }
+- (void)setAdas:(NSData *)adasObject response:(BoolenResponse)response{ }
+- (void)getCaliParamComplition:(DataResponse)response{ }
+- (void)setCaliParam:(NSData *)caliObject response:(BoolenResponse)response{ }
 
 @end

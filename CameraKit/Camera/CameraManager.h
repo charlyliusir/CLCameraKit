@@ -12,6 +12,8 @@
 
 #define USERDEFAULT_CAMERA_AUTO_SAVE @"AutoSave"
 #define USERDEFAULT_CAMERA_AUTO_SAVEVIDEO @"AutoSaveVideo"
+#define USERDEFAULT_CAMERA_PARK_MODE @"parkmode"
+#define USERDEFAULT_CAMERA_EDOG @"edog"
 
 @interface CameraManager : NSObject
 
@@ -81,9 +83,22 @@
 - (void)getCardState:(TypeResponse)response;   // 获取SD卡状态
 - (void)removeUser:(BoolenResponse)response;
 - (void)resetCard:(BoolenResponse)response;      // 格式化SD卡
-- (void)getRecordState:(TypeResponse)response; // 获取录制状态
 // 版本信息命令
 - (void)getVersion:(DataResponse)response;     // 版本号
 - (void)updateVersion:(DataResponse)response;  // 更新版本
+
+// ADNS
+
+- (void)makeShortMovie:(BoolenResponse)response;
+- (void)playbackMoive:(NSData *)movieObject response:(BoolenResponse)response;
+- (void)getRecordState:(DataResponse)response;
+- (void)getAudioRecordState:(DataResponse)response;
+- (void)getAdasState:(DataResponse)response;
+- (void)setHDR:(Byte)hdr response:(BoolenResponse)response;
+- (void)setOSD:(Byte)osd response:(BoolenResponse)response;
+- (void)setAudioPlay:(NSData *)audioPlayObject response:(BoolenResponse)response;
+- (void)setAdas:(NSData *)adasObject response:(BoolenResponse)response;
+- (void)getCaliParamComplition:(DataResponse)response;
+- (void)setCaliParam:(NSData *)caliObject response:(BoolenResponse)response;
 
 @end

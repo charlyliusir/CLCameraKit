@@ -52,6 +52,14 @@
     
 }
 
+//- (void)setCameraFile:(ADNSCameraFile *)cameraFile
+//{
+//    _cameraFile = cameraFile;
+//    
+////    self.name =
+//    
+//}
+
 - (NSString *)covertDateWithString:(NSString *)dataString
 {
     NSMutableString *covertString = [NSMutableString stringWithString:dataString];

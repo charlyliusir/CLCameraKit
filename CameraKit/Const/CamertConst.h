@@ -35,8 +35,9 @@
 // 行车记录仪品牌
 typedef NS_ENUM(NSInteger, CameraBrand) {
     CameraBrandNono,          // ping ip 不通过, 无设备连接
-    CameraBrandNovate,         // 联咏
-    CameraBrandAIT,              // AIT
+    CameraBrandNovate,        // 联咏
+    CameraBrandAIT,           // AIT
+    CameraBrandADNS           // ADNS
 };
 
 // 连接状态
@@ -62,6 +63,7 @@ typedef enum PHOTO_SIZE
 /*--------------MOVIE RECORD SIZE----------------*/
 typedef enum MOVIE_SIZE
 {
+    MOVIE_SIZE_NOT_REQUEST,
     MOVIE_SIZE_1080P,   //  (1920*1080)
     MOVIE_SIZE_720P,
     MOVIE_SIZE_WVGA,
@@ -109,6 +111,7 @@ typedef enum EXPOSURE {
 
 /*--------------GSENSOR----------------*/
 typedef enum GSENSOR {
+    GSENSOR_NOT_REQUEST = -1,
     GSENSOR_OFF = 0,
     GSENSOR_LOW,
     GSENSOR_MED,

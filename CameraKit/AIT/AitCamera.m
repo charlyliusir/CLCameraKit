@@ -110,6 +110,7 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
 
 - (void)RequestURL:(NSString *)url DataResponse:(DataResponse)response
 {
+    NSLog(@"%@",url);
     [CLNetworkingKit RequestWithURL:url parameters:NULL requestmethod:RequestMethodGet contenttype:ContentTypesText responseblock:^(id responseObj, BOOL success, NSError *error) {
         
         if (error) {
@@ -132,7 +133,7 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
 
 - (void)RequestXMLURL:(NSString *)url DataResponse:(DataResponse)response
 {
-    
+    NSLog(@"%@",url);
     [CLNetworkingKit RequestWithURL:url parameters:NULL requestmethod:RequestMethodGet contenttype:ContentTypesXML responseblock:^(id responseObj, BOOL success, NSError *error) {
         
         if (error) {
@@ -297,7 +298,7 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
                 nVideoRes = (int)map.count - 1;
             }
         } else if ([key caseInsensitiveCompare:[AITCameraCommand PROPERTY_mtd]] == NSOrderedSame) {
-            NSArray * map = [NSArray arrayWithObjects:@"Off", @"Low", @"Middle", @"High", nil];
+            NSArray * map = [NSArray arrayWithObjects:@"Off", @"level0", @"level2", @"level4", nil];
             nMTD = [self getMenuId:sz MenuMap:map];
             if (nMTD < 0) {
                 nMTD = 0;
@@ -483,6 +484,11 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
 - (void)setRecordStatus:(BOOL)recordStatus
                response:(BoolenResponse)response
 {
+    if (self.cardState!=CARD_INSERTED&&self.cardState!=CARD_UNKNOW) {
+//        [SVProgressHUD showErrorWithStatus:@"请插入SD卡!"];
+        response(0,self.state);
+        return;
+    }
     NSString *url = [AITCameraCommand commandCameraRecordUrl];
     [self RequestURL:url DataResponse:^(BOOL success, id obj, CameraState eyeState) {
         if (success) {
@@ -529,6 +535,11 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
  @result void
  */
 - (void)TakeCapture:(DataResponse)response{
+    if (self.cardState!=CARD_INSERTED&&self.cardState!=CARD_UNKNOW) {
+//        [SVProgressHUD showErrorWithStatus:@"请插入SD开！"];
+        response(0, @"no insert", self.state);
+        return;
+    }
     [self takePhoto:^(BOOL success, id obj, CameraState eyeState) {
         if (success) {
             [self cuptureAudio];
@@ -797,15 +808,17 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
  */
 - (void)setSensititySize:(GSENSOR)sensititySize
                 response:(BoolenResponse)response{
-    NSArray *mtdArr = @[@"Off", @"Low", @"Middle", @"High"];
+    NSArray *mtdArr = @[@"Off", @"LEVEL0", @"LEVEL2", @"LEVEL4"];
     if (sensititySize >= mtdArr.count) {
         response(NO,self.cameraState);
     }else {
         NSString *url = [AITCameraCommand commandSetMTD:mtdArr[sensititySize]];
         [self RequestURL:url DataResponse:^(BOOL success, id obj, CameraState eyeState) {
-            NSMutableDictionary *dict = self.statusDic.mutableCopy;
-            dict[@"mtd"] = [NSString stringWithFormat:@"%d",sensititySize];
-            self.statusDic = dict.copy;
+            if (success) {
+                NSMutableDictionary *dict = self.statusDic.mutableCopy;
+                dict[@"mtd"] = [NSString stringWithFormat:@"%d",sensititySize];
+                self.statusDic = dict.copy;
+            }
             response(success,eyeState);
         }];
     }
@@ -1030,8 +1043,10 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
         NSDictionary *dict = [AITCameraCommand buildResultDictionary:obj];
         NSString *statusValue = dict[@"Camera.Menu.SDIsExist"];
         if ([statusValue containsString:@"TRUE"]) {
+            self.cardState = CARD_INSERTED;
             response(success, CARD_INSERTED, eyeState);
         }else {
+            self.cardState = CARD_REMOVED;
             response(success, CARD_REMOVED, eyeState);
         }
         
@@ -1056,16 +1071,6 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
 }
 /*!
  @method
- @abstract 获取录制状态
- @discussion 获取录制状态
- @result void
- */
-- (void)getRecordState:(DataResponse)response{
-    
-}
-
-/*!
- @method
  @abstract 获取版本信息
  @discussion 获取版本信息,录制 cmd = 3012
  @param response DataResponse 参数1 是否成功 参数2 id数据
@@ -1088,7 +1093,17 @@ static NSString *DEFAULT_MJPEG_PUSH_URL = @"/cgi-bin/liveMJPEG" ;
  @param response DataResponse 参数1 是否成功 参数2 id数据
  @result void
  */
-- (void)updateVersion:(DataResponse)response{
-    
-}
+
+#pragma mark - ANDS 命令
+- (void)makeShortMovie:(BoolenResponse)response{ }
+- (void)playbackMoive:(NSData *)movieObject response:(BoolenResponse)response{ }
+- (void)getRecordState:(DataResponse)response{ }
+- (void)getAudioRecordState:(DataResponse)response{ }
+- (void)getAdasState:(DataResponse)response{ }
+- (void)setHDR:(Byte)hdr response:(BoolenResponse)response{ }
+- (void)setOSD:(Byte)osd response:(BoolenResponse)response{ }
+- (void)setAudioPlay:(NSData *)audioPlayObject response:(BoolenResponse)response{ }
+- (void)setAdas:(NSData *)adasObject response:(BoolenResponse)response{ }
+- (void)getCaliParamComplition:(DataResponse)response{ }
+- (void)setCaliParam:(NSData *)caliObject response:(BoolenResponse)response{ }
 @end

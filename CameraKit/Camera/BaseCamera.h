@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "CameraTools.h"
 #import "CLNetworkingKit.h"
+//#import "SVProgressHUD.h"
 
 #import "CameraInfo.h"
 #import "CameraVersion.h"
@@ -24,6 +25,7 @@
 @interface BaseCamera : NSObject
 
 @property (nonatomic, getter=cameraState)CameraState state; // 行车记录仪连接状态
+@property (nonatomic, assign) CARD_STATUS cardState;
 
 /***** 方法 *****/
 //+ (id)sharedCameraManager;    // 单例
@@ -75,8 +77,19 @@
 - (void)getCardState:(TypeResponse)response;   // 获取SD卡状态
 - (void)removeUser:(BoolenResponse)response;
 - (void)resetCard:(BoolenResponse)response;      // 格式化SD卡
-- (void)getRecordState:(DataResponse)response; // 获取录制状态
 // 版本信息命令
 - (void)getVersion:(DataResponse)response;     // 版本号
 - (void)updateVersion:(DataResponse)response;  // 更新版本
+
+- (void)makeShortMovie:(BoolenResponse)response;
+- (void)playbackMoive:(NSData *)movieObject response:(BoolenResponse)response;
+- (void)getRecordState:(DataResponse)response;
+- (void)getAudioRecordState:(DataResponse)response;
+- (void)getAdasState:(DataResponse)response;
+- (void)setHDR:(Byte)hdr response:(BoolenResponse)response;
+- (void)setOSD:(Byte)osd response:(BoolenResponse)response;
+- (void)setAudioPlay:(NSData *)audioPlayObject response:(BoolenResponse)response;
+- (void)setAdas:(NSData *)adasObject response:(BoolenResponse)response;
+- (void)getCaliParamComplition:(DataResponse)response;
+- (void)setCaliParam:(NSData *)caliObject response:(BoolenResponse)response;
 @end

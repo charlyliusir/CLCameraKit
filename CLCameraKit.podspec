@@ -58,11 +58,20 @@ ss.source_files = 'CameraKit/Model/**/*'
 ss.public_header_files = 'CameraKit/Model/**/*.h'
 ss.dependency 'CLCameraKit/CLQueueManager'
 ss.dependency 'CLCameraKit/Const'
+ss.dependency 'CLCameraKit/Other'
 end
 
 s.subspec 'Novatek' do |ss|
 ss.source_files = 'CameraKit/Novatek/**/*'
 ss.public_header_files = 'CameraKit/Novatek/**/*.h'
+ss.dependency 'CLCameraKit/Camera'
+ss.dependency 'CocoaAsyncSocket'
+end
+
+s.subspec 'ADNS' do |ss|
+ss.source_files = 'CameraKit/ADNS/**/*'
+ss.public_header_files = 'CameraKit/Novatek/**/*.h'
+ss.dependency 'CLCameraKit/Const'
 ss.dependency 'CLCameraKit/Camera'
 ss.dependency 'CocoaAsyncSocket'
 end

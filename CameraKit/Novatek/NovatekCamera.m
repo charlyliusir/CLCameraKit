@@ -277,8 +277,6 @@
                     response(NO, self.cameraState);
             } else if ([responseObj isKindOfClass:[NSDictionary class]]) {
                 
-                
-                
             }
             
         }else{
@@ -433,6 +431,11 @@
  */
 - (void)setRecordStatus:(BOOL)recordStatus response:(BoolenResponse)response
 {
+    if (self.cardState!=CARD_INSERTED&&self.cardState!=CARD_UNKNOW) {
+//        [SVProgressHUD showErrorWithStatus:@"请插入SD卡!"];
+        response(0,self.state);
+        return;
+    }
     [self RequestCMD:WIFIAPP_CMD_RECORD parameter:[self covertStringWithBoolen:recordStatus] string:NULL BoolenResponse:^(BOOL success, CameraState eyeState) {
         
         if (success) {
@@ -512,6 +515,12 @@
  */
 - (void)TakeCapture:(DataResponse)response{
     
+    if (self.cardState!=CARD_INSERTED&&self.cardState!=CARD_UNKNOW) {
+//        [SVProgressHUD showErrorWithStatus:@"请插入SD卡!"];
+        response(0, @"no insert", self.state);
+        return;
+    }
+    
     switch (self.cameraState) {
             
         case CameraStateDisConnected:
@@ -535,7 +544,7 @@
                         response(YES, NULL, eyeState);
                         
                     } else {
-                        if (success) {
+                        if (success&&dict[@"file"]) {
                             [self cuptureAudio];
                             
                             NSDictionary *fileDict = dict[@"file"];
@@ -547,8 +556,9 @@
                             CameraFile *model = [[CameraFile alloc] initQueueWithDownloadURL:furl folder:LOCAL_FILE_LIST[0] name:name];
                             // 处理
                             model.name   = name;
-                            model.fileType   = CameraFileTypePhoto;
-                            model.fileURL    = furl;
+                            model.filePath    = filePath;
+                            model.fileType    = CameraFileTypePhoto;
+                            model.fileURL     = furl;
                             model.fileNailURL = [NSString stringWithFormat:@"%@?custom=%@&cmd=%@", model.fileURL, CUSTOM, WIFIAPP_CMD_THUMB];
                             
                             response(YES, model, eyeState);
@@ -627,16 +637,19 @@
  */
 - (void)takePhoto:(DataResponse)response
 {
-    [self changeMovieModel:WIFI_APP_MODE_PHOTO response:NULL];
-    [self RequestCMD:WIFIAPP_CMD_CAPTURE DataResponse:^(BOOL success, id obj, CameraState eyeState) {
-       // 数据处理->统一格式,使用Model
-        [self changeMovieModel:WIFI_APP_MODE_MOVIE response:^(BOOL success, CameraState eyeState) {
-            NSLog(@"success = %d", success);
-            if (response) {
-                response(success, obj, eyeState);
-            }
-
+    [self changeMovieModel:WIFI_APP_MODE_PHOTO response:^(BOOL success, CameraState eyeState) {
+        
+        [self RequestCMD:WIFIAPP_CMD_CAPTURE DataResponse:^(BOOL success, id obj, CameraState eyeState) {
+            // 数据处理->统一格式,使用Model
+            [self changeMovieModel:WIFI_APP_MODE_MOVIE response:^(BOOL success, CameraState eyeState) {
+                NSLog(@"success = %d", success);
+                if (response) {
+                    response(success, obj, eyeState);
+                }
+                
+            }];
         }];
+        
     }];
     
 }
@@ -1095,6 +1108,7 @@
                         CameraFile *model = [[CameraFile alloc] initQueueWithDownloadURL:furl folder:folder name:name];
                         // 对model操作
                         model.name = name;
+                        model.filePath = filePath;
                         model.fileSize = @([fileSize integerValue]);
                         model.fileURL  = furl;
                         model.fileNailURL = [NSString stringWithFormat:@"%@?custom=%@&cmd=%@", model.fileURL, CUSTOM, WIFIAPP_CMD_THUMB];
@@ -1122,7 +1136,7 @@
  @result void
  */
 - (void)deleteFile:(CameraFile *)file response:(BoolenResponse)response{
-    [self RequestCMD:WIFIAPP_CMD_DELETE_ONE parameter:NULL string:file.name BoolenResponse:^(BOOL success, CameraState eyeState) {
+    [self RequestCMD:WIFIAPP_CMD_DELETE_ONE parameter:NULL string:file.filePath BoolenResponse:^(BOOL success, CameraState eyeState) {
         if (response)
             response(success, eyeState);
     }];
@@ -1151,8 +1165,10 @@
  */
 - (void)getCardState:(TypeResponse)response{
     [self RequestCMD:WIFIAPP_CMD_GET_CARD_STATUS TypeResponse:^(BOOL success, int type, CameraState eyeState) {
-        if (response)
+        if (response){
+            self.cardState = type+1;
             response(success, type, eyeState);
+        }
     }];
 }
 
@@ -1185,16 +1201,6 @@
         if (response)
             response(success, eyeState);
     }];
-}
-
-/*!
- @method
- @abstract 获取录制状态
- @discussion 获取录制状态
- @result void
- */
-- (void)getRecordState:(DataResponse)response{
-    // 已实现
 }
 
 /*!
@@ -1233,6 +1239,19 @@
         
     }
 }
+
+#pragma mark - ANDS 命令
+- (void)makeShortMovie:(BoolenResponse)response{ }
+- (void)playbackMoive:(NSData *)movieObject response:(BoolenResponse)response{ }
+- (void)getRecordState:(DataResponse)response{ }
+- (void)getAudioRecordState:(DataResponse)response{ }
+- (void)getAdasState:(DataResponse)response{ }
+- (void)setHDR:(Byte)hdr response:(BoolenResponse)response{ }
+- (void)setOSD:(Byte)osd response:(BoolenResponse)response{ }
+- (void)setAudioPlay:(NSData *)audioPlayObject response:(BoolenResponse)response{ }
+- (void)setAdas:(NSData *)adasObject response:(BoolenResponse)response{ }
+- (void)getCaliParamComplition:(DataResponse)response{ }
+- (void)setCaliParam:(NSData *)caliObject response:(BoolenResponse)response{ }
 
 
 - (void)setNewSetting:(NSString *)obj cmd:(NSString *)cmd

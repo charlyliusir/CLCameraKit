@@ -140,7 +140,8 @@ typedef enum BATTERY_STATUS{
 
 /*--------------CARD STATUS----------------*/
 typedef enum CARD_STATUS{
-    CARD_REMOVED = 0,
+    CARD_UNKNOW = 0,
+    CARD_REMOVED,
     CARD_INSERTED,
     CARD_LOCKED
 } CARD_STATUS;

@@ -11,12 +11,17 @@
 
 #define NOVATE_PLAY_URL @"rtsp://192.168.1.254/xxxx.mp4"
 #define AIT_PLAY_URL @"rtsp://192.72.1.1/liveRTSP/av1"
+#define ADNS_PLAY_URL @"rtsp://192.168.42.1/streami"
+const static NSString *fileKey = @"file";
+const static NSString *blockKey= @"block";
+
 @interface CameraManager ()<CLQueueManagerDelegate>
 @property (nonatomic, copy)NSArray *ips;
 @property (nonatomic, copy)NSArray *classes;
 @property (nonatomic, assign)NSInteger currentItem;
 @property (nonatomic, strong)BaseCamera *camera;
 @property (nonatomic, strong)NSMutableArray *cmdRequests;
+@property (nonatomic, strong)NSMutableArray *deleteFileList;
 
 @end
 
@@ -27,19 +32,20 @@
     if (self = [super init]) {
         
         self.currentItem = 0;
-        self.ips = @[@"192.168.1.254",@"192.72.1.1"];
-        self.classes = @[@"NovatekCamera",@"AitCamera"];
-        self.cmdRequests = [[NSMutableArray alloc] init];
-//        self.cameraDownloadList = [[NSMutableArray alloc] init];
+        /*** 10.0.1.1 是测试 ***/
+        self.ips = @[@"192.168.1.254",@"192.72.1.1",@"10.0.1.1",@"192.168.42.1"];
+        self.classes = @[@"NovatekCamera",@"AitCamera",@"WiFiCameraCommand"];
+        self.cmdRequests    = [[NSMutableArray alloc] init];
+        self.deleteFileList = [[NSMutableArray alloc] init];
         
         self.fileQueueManager = [[CLQueueManager alloc] init];
         self.nailQueueManager = [[CLQueueManager alloc] init];
         [self.nailQueueManager setDelegate:self];
-
-        [[AFNetworkReachabilityManager sharedManager] startMonitoring];
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ChangeNetWorking:) name:AFNetworkingReachabilityDidChangeNotification object:nil];
         
-//        [[Reachability reachabilityForLocalWiFi] startNotifier];
+        [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+        //        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ChangeNetWorking:) name:AFNetworkingReachabilityDidChangeNotification object:nil];
+        
+        //        [[Reachability reachabilityForLocalWiFi] startNotifier];
         
     }
     return self;
@@ -78,7 +84,6 @@
 }
 
 
-
 - (void)ChangeNetWorking:(NSNotification *)notification
 {
     
@@ -97,14 +102,17 @@
 {
     switch (self.brand) {
         case CameraBrandNovate:
-             previewURLBlock(NOVATE_PLAY_URL);
-             break;
+            previewURLBlock(NOVATE_PLAY_URL);
+            break;
         case CameraBrandAIT:
         {
             [self.camera getPerViewURL:^(NSString * previewURL) {
                 previewURLBlock(previewURL);
             } AddressURL:self.ips[self.brand-1]];
         }
+        case CameraBrandADNS:
+            previewURLBlock(ADNS_PLAY_URL);
+            break;
         default:
             break;
     }
@@ -188,21 +196,22 @@
         response(NO, CameraStateDisConnected);
         return;
     }
-    SEL selector[1];
-    selector[0] = @selector(setRecordStatus:response:);
     
     [self.camera setRecordStatus:recordStatus response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
     }];
 }
+
 - (void)changeMovieModel:(WIFI_APP_MODE_CMD)model response:(BoolenResponse)response{
     if(self.cameraBrand==CameraBrandNono){
         response(NO, CameraStateDisConnected);
         return;
     }
     [self.camera changeMovieModel:model response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -213,7 +222,9 @@
         response(NO, NULL, CameraStateDisConnected);
         return;
     }
+    
     [self.camera TakeCapture:^(BOOL success, id obj, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, obj, eyeState);
         }
@@ -227,17 +238,20 @@
         return;
     }
     [self.camera setSystemDate:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
     }];
 }
+
 - (void)getSystemDate:(BoolenResponse)response{
     if(self.cameraBrand==CameraBrandNono){
         response(NO, CameraStateDisConnected);
         return;
     }
     [self.camera getSystemDate:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -249,6 +263,7 @@
         return;
     }
     [self.camera resetSystem:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -261,6 +276,7 @@
         return;
     }
     [self.camera setAutoRecording:autoRecording response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -272,6 +288,7 @@
         return;
     }
     [self.camera getAutoRecording:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -284,6 +301,7 @@
         return;
     }
     [self.camera setAutoRecord:autoRecord response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -295,6 +313,7 @@
         return;
     }
     [self.camera getAutoRecord:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -307,6 +326,7 @@
         return;
     }
     [self.camera setRecordSize:recordSize response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -318,6 +338,7 @@
         return;
     }
     [self.camera getRecordSize:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -330,6 +351,7 @@
         return;
     }
     [self.camera setLiveSize:liveSize response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -341,6 +363,7 @@
         return;
     }
     [self.camera getLiveSize:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -353,6 +376,7 @@
         return;
     }
     [self.camera setPhotoSize:photoSize response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -364,6 +388,7 @@
         return;
     }
     [self.camera getPhotoSize:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -376,6 +401,7 @@
         return;
     }
     [self.camera setSensititySize:sensititySize response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -387,6 +413,7 @@
         return;
     }
     [self.camera getSensititySize:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -399,6 +426,7 @@
         return;
     }
     [self.camera setExposureSize:exposureSize response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -410,6 +438,7 @@
         return;
     }
     [self.camera getExposureSize:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -423,6 +452,7 @@
         return;
     }
     [self.camera setSSIDandPWD:ssidAndPwd response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -434,6 +464,7 @@
         return;
     }
     [self.camera getSSIDandPWD:^(BOOL success, id obj, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, obj, eyeState);
         }
@@ -447,6 +478,7 @@
         return;
     }
     [self.camera getDiskFreeSpace:^(BOOL success, id obj, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, obj, eyeState);
         }
@@ -460,6 +492,7 @@
         return;
     }
     [self.camera getFileList:^(BOOL success, id obj, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             
             NSArray *objArray        = (NSArray *)obj;
@@ -495,23 +528,48 @@
         }
     }];
 }
-- (void)deleteFile:(CameraFile *)file response:(BoolenResponse)response{
+
+- (void)delete:(CameraFile *)file response:(BoolenResponse)response
+{
     if(self.cameraBrand==CameraBrandNono){
         response(NO, CameraStateDisConnected);
         return;
     }
     [self.camera deleteFile:file response:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
+        [self.deleteFileList removeObjectAtIndex:0];
+        if (self.deleteFileList.count>0) {
+            NSDictionary *dict = [self.deleteFileList firstObject];
+            [self delete:dict[fileKey] response:dict[blockKey]];
+        }
     }];
 }
+
+- (void)deleteFile:(CameraFile *)file response:(BoolenResponse)response{
+    
+    NSMutableDictionary *obj = @{fileKey:file}.mutableCopy;
+    if (response) {
+        [obj setObject:response forKey:blockKey];
+    }
+    [self.deleteFileList addObject:obj];
+    
+    if (self.deleteFileList.count==1) {
+        NSDictionary *dict = [self.deleteFileList firstObject];
+        [self delete:dict[fileKey] response:dict[blockKey]];
+    }
+    
+}
+
 - (void)deleteFileList:(BoolenResponse)response{
     if(self.cameraBrand==CameraBrandNono){
         response(NO, CameraStateDisConnected);
         return;
     }
     [self.camera deleteFileList:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -525,6 +583,7 @@
         return;
     }
     [self.camera getCardState:^(BOOL success, int type, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, type, eyeState);
         }
@@ -539,6 +598,7 @@
         return;
     }
     [self.camera removeUser:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
         }
@@ -551,19 +611,9 @@
         return;
     }
     [self.camera resetCard:^(BOOL success, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, eyeState);
-        }
-    }];
-}
-- (void)getRecordState:(TypeResponse)response{
-    if(self.cameraBrand==CameraBrandNono){
-        response(NO, -1, CameraStateDisConnected);
-        return;
-    }
-    [self.camera getRecordSize:^(BOOL success, int type, CameraState eyeState) {
-        if (response&&!self.cancelRequest) {
-            response(success, type, eyeState);
         }
     }];
 }
@@ -573,6 +623,7 @@
         return;
     }
     [self.camera getVersion:^(BOOL success, id obj, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, obj, eyeState);
         }
@@ -584,10 +635,56 @@
         return;
     }
     [self.camera updateVersion:^(BOOL success, id obj, CameraState eyeState) {
+        self->_state = eyeState;
         if (response&&!self.cancelRequest) {
             response(success, obj, eyeState);
         }
     }];
+}
+
+- (void)makeShortMovie:(BoolenResponse)response
+{
+    
+}
+- (void)playbackMoive:(NSData *)movieObject response:(BoolenResponse)response
+{
+    
+}
+- (void)getRecordState:(DataResponse)response
+{
+    
+}
+- (void)getAudioRecordState:(DataResponse)response
+{
+    
+}
+- (void)getAdasState:(DataResponse)response
+{
+    
+}
+- (void)setHDR:(Byte)hdr response:(BoolenResponse)response
+{
+    
+}
+- (void)setOSD:(Byte)osd response:(BoolenResponse)response
+{
+    
+}
+- (void)setAudioPlay:(NSData *)audioPlayObject response:(BoolenResponse)response
+{
+    
+}
+- (void)setAdas:(NSData *)adasObject response:(BoolenResponse)response
+{
+    
+}
+- (void)getCaliParamComplition:(DataResponse)response
+{
+    
+}
+- (void)setCaliParam:(NSData *)caliObject response:(BoolenResponse)response
+{
+    
 }
 
 @end
